@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨性别旗帜下载</title>
+    <meta name="description" content="一个提供跨性别骄傲旗帜自定义尺寸下载并提供精确颜色代码的工具页面。">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .color-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .color-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .copy-btn {
+            transition: background-color 0.2s ease;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .preset-btn, .format-btn, .download-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .preset-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+        .format-btn.active {
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+            --tw-ring-color: #5BCEFA;
+            border-color: #5BCEFA;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 md:p-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">跨性别旗帜下载</h1>
+        </header>
+
+        <main>
+            <section id="download-section" class="mb-12 bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 border-b pb-3 mb-6">创建你的旗帜图片</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3">1. 选择尺寸</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(3840, 2160)">4K <span class="block text-xs text-slate-500">3840x2160</span></button>
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(1920, 1080)">1080p <span class="block text-xs text-slate-500">1920x1080</span></button>
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(2560, 1440)">2K <span class="block text-xs text-slate-500">2560x1440</span></button>
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(1080, 1920)">手机竖屏 <span class="block text-xs text-slate-500">1080x1920</span></button>
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(1080, 1080)">正方形 <span class="block text-xs text-slate-500">1080x1080</span></button>
+                        <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(1500, 500)">Twitter 头图 <span class="block text-xs text-slate-500">1500x500</span></button>
+                         <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(1200, 630)">社交媒体 <span class="block text-xs text-slate-500">1200x630</span></button>
+                         <button class="preset-btn p-3 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm" onclick="setPreset(728, 90)">横幅广告 <span class="block text-xs text-slate-500">728x90</span></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                    <div>
+                        <h3 class="text-base font-semibold text-slate-800 mb-3">或手动设置 (px)</h3>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="width" placeholder="宽度" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                            <span class="text-slate-400">×</span>
+                            <input type="number" id="height" placeholder="高度" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">2. 选择格式</h3>
+                         <div class="flex gap-2">
+                            <button id="format-png" class="format-btn w-full p-2 border-2 border-slate-300 rounded-md active" onclick="setFormat('png')">PNG</button>
+                            <button id="format-jpg" class="format-btn w-full p-2 border-2 border-slate-300 rounded-md" onclick="setFormat('jpg')">JPG</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                     <h3 class="text-lg font-semibold text-slate-800 mb-3">3. 生成文件</h3>
+                    <button id="download-btn" class="download-btn w-full bg-gradient-to-r from-blue-400 to-pink-400 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg">
+                        <i class="fas fa-download mr-2"></i> 生成并下载
+                    </button>
+                </div>
+                <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-5 py-2 rounded-lg shadow-xl opacity-0 translate-y-4 transition-all duration-300">
+                    已复制到剪贴板！
+                </div>
+            </section>
+            
+            <section id="color-standards">
+                <h2 class="text-2xl font-bold text-slate-900 border-b pb-3 mb-6">颜色标准</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="color-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="w-full h-16 rounded-md mb-4" style="background-color: #5BCEFA;"></div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">淡蓝色</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center"><span>HEX:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="hex-blue">#5BCEFA</code><button class="copy-btn" onclick="copyToClipboard('#hex-blue')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>RGB:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="rgb-blue">91, 206, 250</code><button class="copy-btn" onclick="copyToClipboard('#rgb-blue')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>CMYK:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="cmyk-blue">63, 18, 0, 2</code><button class="copy-btn" onclick="copyToClipboard('#cmyk-blue')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>Pantone:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="pms-blue">2345 C</code><button class="copy-btn" onclick="copyToClipboard('#pms-blue')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="color-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="w-full h-16 rounded-md mb-4" style="background-color: #F5A9B8;"></div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">淡粉色</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center"><span>HEX:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="hex-pink">#F5A9B8</code><button class="copy-btn" onclick="copyToClipboard('#hex-pink')"><i class="fa-regular fa-copy text-slate-500 hover:text-pink-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>RGB:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="rgb-pink">245, 169, 184</code><button class="copy-btn" onclick="copyToClipboard('#rgb-pink')"><i class="fa-regular fa-copy text-slate-500 hover:text-pink-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>CMYK:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="cmyk-pink">0, 31, 25, 4</code><button class="copy-btn" onclick="copyToClipboard('#cmyk-pink')"><i class="fa-regular fa-copy text-slate-500 hover:text-pink-500"></i></button></div>
+                             <div class="flex justify-between items-center"><span>Pantone:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="pms-pink">2036 C</code><button class="copy-btn" onclick="copyToClipboard('#pms-pink')"><i class="fa-regular fa-copy text-slate-500 hover:text-pink-500"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="color-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="w-full h-16 rounded-md mb-4 border" style="background-color: #FFFFFF;"></div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">白色</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center"><span>HEX:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="hex-white">#FFFFFF</code><button class="copy-btn" onclick="copyToClipboard('#hex-white')"><i class="fa-regular fa-copy text-slate-500 hover:text-gray-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>RGB:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="rgb-white">255, 255, 255</code><button class="copy-btn" onclick="copyToClipboard('#rgb-white')"><i class="fa-regular fa-copy text-slate-500 hover:text-gray-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>CMYK:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="cmyk-white">0, 0, 0, 0</code><button class="copy-btn" onclick="copyToClipboard('#cmyk-white')"><i class="fa-regular fa-copy text-slate-500 hover:text-gray-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>Pantone:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="pms-white">White</code><button class="copy-btn" onclick="copyToClipboard('#pms-white')"><i class="fa-regular fa-copy text-slate-500 hover:text-gray-500"></i></button></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-sm text-slate-500">
+            <p>Made with <i class="fa-solid fa-heart text-pink-400"></i> for the love. Love is Love. Happy Pride!</p>
+            <p class="mt-1">当前时间: <span id="current-time"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // --- 状态管理 ---
+        const state = {
+            width: 1920,
+            height: 1080,
+            format: 'png' // 'png' or 'jpg'
+        };
+
+        // --- DOM 元素 ---
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const downloadButton = document.getElementById('download-btn');
+        const pngButton = document.getElementById('format-png');
+        const jpgButton = document.getElementById('format-jpg');
+        const toast = document.getElementById('toast');
+        const timeEl = document.getElementById('current-time');
+
+        // --- 颜色定义 ---
+        const colors = {
+            blue: '#5BCEFA',
+            pink: '#F5A9B8',
+            white: '#FFFFFF'
+        };
+
+        // --- 功能函数 ---
+        function updateUI() {
+            widthInput.value = state.width;
+            heightInput.value = state.height;
+
+            pngButton.classList.toggle('active', state.format === 'png');
+            jpgButton.classList.toggle('active', state.format === 'jpg');
+        }
+
+        function setPreset(width, height) {
+            state.width = width;
+            state.height = height;
+            updateUI();
+        }
+
+        function setFormat(format) {
+            state.format = format;
+            updateUI();
+        }
+        
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 2000);
+        }
+
+        function copyToClipboard(elementSelector) {
+            const element = document.querySelector(elementSelector);
+            if (element && navigator.clipboard) {
+                navigator.clipboard.writeText(element.innerText).then(() => {
+                    showToast('已复制到剪贴板！');
+                }).catch(err => {
+                    console.error('无法复制: ', err);
+                    showToast('复制失败！');
+                });
+            }
+        }
+
+        function drawFlag(canvas, ctx, width, height) {
+            const stripeHeight = height / 5;
+            
+            ctx.fillStyle = colors.blue;
+            ctx.fillRect(0, 0, width, stripeHeight);
+
+            ctx.fillStyle = colors.pink;
+            ctx.fillRect(0, stripeHeight, width, stripeHeight);
+
+            ctx.fillStyle = colors.white;
+            ctx.fillRect(0, stripeHeight * 2, width, stripeHeight);
+            
+            ctx.fillStyle = colors.pink;
+            ctx.fillRect(0, stripeHeight * 3, width, stripeHeight);
+            
+            ctx.fillStyle = colors.blue;
+            ctx.fillRect(0, stripeHeight * 4, width, stripeHeight);
+        }
+
+        function handleDownload() {
+            const width = parseInt(widthInput.value, 10);
+            const height = parseInt(heightInput.value, 10);
+
+            if (!width || !height || width <= 0 || height <= 0) {
+                alert("请输入有效的宽度和高度！");
+                return;
+            }
+            
+            state.width = width;
+            state.height = height;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = state.width;
+            canvas.height = state.height;
+            const ctx = canvas.getContext('2d');
+
+            drawFlag(canvas, ctx, state.width, state.height);
+
+            const link = document.createElement('a');
+            const mimeType = `image/${state.format}`;
+            const quality = state.format === 'jpg' ? 0.92 : undefined;
+            
+            link.href = canvas.toDataURL(mimeType, quality);
+            link.download = `transgender-flag-${state.width}x${state.height}.${state.format}`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function updateTime() {
+             const now = new Date();
+             timeEl.textContent = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+             });
+        }
+
+        // --- 事件监听 ---
+        downloadButton.addEventListener('click', handleDownload);
+        widthInput.addEventListener('change', () => state.width = parseInt(widthInput.value, 10));
+        heightInput.addEventListener('change', () => state.height = parseInt(heightInput.value, 10));
+
+
+        // --- 初始化 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setPreset(1920, 1080);
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+    </script>
+</body>
+</html>

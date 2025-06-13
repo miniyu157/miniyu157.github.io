@@ -42,8 +42,13 @@
         .preset-btn:hover,
         .download-btn:hover,
         .flag-selector-btn:hover {
-            transform: translateY(-2px);
+            /* transform: translateY(-2px); */
+            /* scale: 1.01; */
             filter: brightness(1.05);
+        }
+
+        .preset-btn:active {
+            scale: 0.93;
         }
 
         .format-btn.active,
@@ -67,18 +72,32 @@
         }
 
         dialog[open] {
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.3s;
+        }
+
+        dialog[open]::backdrop{
+            animation: backdropAnim 0.3s;
+        }
+
+        @keyframes backdropAnim {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: scale(0.95);
+                filter: blur(10px);
             }
 
             to {
                 opacity: 1;
-                transform: scale(1);
+                filter: blur(0);
             }
         }
     </style>
@@ -304,7 +323,11 @@
                                 class="w-full p-2 border-2 border-slate-300 rounded-md outline-none transition-all">
                             <i class="fas fa-lock absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden"></i>
                         </div>
-                        <span class="text-slate-400">×</span>
+                        <button id="swap-dimensions-btn"
+                            class="p-2 border-2 border-slate-300 rounded-md hover:bg-slate-200 transition-colors flex-shrink-0"
+                            aria-label="交换宽度和高度">
+                            <i class="fas fa-exchange-alt text-slate-600"></i>
+                        </button>
                         <div class="relative w-full">
                             <input type="number" id="modal-height" placeholder="高度"
                                 class="w-full p-2 border-2 border-slate-300 rounded-md outline-none transition-all">
@@ -659,6 +682,7 @@
             const applyBtn = document.getElementById('apply-advanced-editor-btn');
             const modalWidthInput = document.getElementById('modal-width');
             const modalHeightInput = document.getElementById('modal-height');
+            const swapDimensionsBtn = document.getElementById('swap-dimensions-btn');
             const ratioButtonsContainer = document.getElementById('ratio-buttons');
             const lockControls = document.getElementById('lock-controls');
             const lockLabel = document.getElementById('lock-label');
@@ -676,9 +700,42 @@
 
             const closeModal = () => modal.close();
 
+
+            const updateRatioFromInputs = () => {
+                const w = parseFloat(modalWidthInput.value);
+                const h = parseFloat(modalHeightInput.value);
+                let bestMatch = 'custom';
+                if (w && h) {
+                    const currentRatioValue = w / h;
+                    let minDiff = Infinity;
+                    ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => {
+                        const ratioStr = btn.dataset.ratio;
+                        if (ratioStr !== 'custom') {
+                            const ratio = eval(ratioStr);
+                            const diff = Math.abs(currentRatioValue - ratio);
+                            if (diff < 0.01 && diff < minDiff) {
+                                minDiff = diff;
+                                bestMatch = ratioStr;
+                            }
+                        }
+                    });
+                }
+                currentRatio = bestMatch;
+                ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === bestMatch));
+                updateLockUI();
+            };
+
             openBtn.addEventListener('click', openModal);
             closeBtn.addEventListener('click', closeModal);
             cancelBtn.addEventListener('click', closeModal);
+
+            swapDimensionsBtn.addEventListener('click', () => {
+                const temp = modalWidthInput.value;
+                modalWidthInput.value = modalHeightInput.value;
+                modalHeightInput.value = temp;
+                updateRatioFromInputs();
+            });
+
 
             modal.addEventListener('click', (event) => {
                 if (event.target === modal) {
@@ -723,30 +780,6 @@
                     if (!isNaN(height)) modalWidthInput.value = Math.round(height * ratioValue);
                 }
             };
-
-            const updateRatioFromInputs = () => {
-                const w = parseFloat(modalWidthInput.value);
-                const h = parseFloat(modalHeightInput.value);
-                let bestMatch = 'custom';
-                if (w && h) {
-                    const currentRatioValue = w / h;
-                    let minDiff = Infinity;
-                    ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => {
-                        const ratioStr = btn.dataset.ratio;
-                        if (ratioStr !== 'custom') {
-                            const ratio = eval(ratioStr);
-                            const diff = Math.abs(currentRatioValue - ratio);
-                            if (diff < 0.01 && diff < minDiff) {
-                                minDiff = diff;
-                                bestMatch = ratioStr;
-                            }
-                        }
-                    });
-                }
-                currentRatio = bestMatch;
-                ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === bestMatch));
-                updateLockUI();
-            }
 
             lockControls.addEventListener('click', () => {
                 if (currentRatio !== 'custom') {

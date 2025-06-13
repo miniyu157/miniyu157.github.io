@@ -16,16 +16,11 @@
         }
 
         .color-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-
-        .color-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transition: all 0.2s;
         }
 
         .copy-btn {
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s;
         }
 
         .copy-btn:active {
@@ -42,13 +37,11 @@
         .preset-btn:hover,
         .download-btn:hover,
         .flag-selector-btn:hover {
-            /* transform: translateY(-2px); */
-            /* scale: 1.01; */
             filter: brightness(1.05);
         }
 
         .preset-btn:active {
-            scale: 0.93;
+            scale: 0.95;
         }
 
         .format-btn.active,
@@ -75,11 +68,11 @@
             animation: fadeIn 0.3s;
         }
 
-        dialog[open]::backdrop{
-            animation: backdropAnim 0.3s;
+        dialog[open]::backdrop {
+            animation: backdropIn 0.3s;
         }
 
-        @keyframes backdropAnim {
+        @keyframes backdropIn {
             from {
                 opacity: 0;
             }
@@ -92,12 +85,44 @@
         @keyframes fadeIn {
             from {
                 opacity: 0;
+                scale: 1.05;
                 filter: blur(10px);
             }
 
             to {
                 opacity: 1;
+                scale: 1;
                 filter: blur(0);
+            }
+        }
+
+        dialog.closing {
+            animation: fadeOut 0.3s forwards;
+        }
+
+        dialog.closing::backdrop {
+            animation: backdropFadeOut 0.3s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            to {
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        @keyframes backdropFadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
             }
         }
     </style>
@@ -542,7 +567,7 @@
             flagColors.forEach((color, i) => {
                 const cardId = `${state.currentFlag}-${i}`;
                 const card = `
-                <div class="color-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="color-card bg-white p-6 rounded-xl shadow-sm hover:shadow-lg border border-slate-200">
                     <div class="w-full h-16 rounded-md mb-4 ${color.hex === '#FFFFFF' ? 'border' : ''}" style="background-color: ${color.hex};"></div>
                     <h3 class="text-xl font-semibold mb-3 text-slate-800">${color.name}</h3>
                     <div class="space-y-2 text-sm">
@@ -698,7 +723,13 @@
                 modal.showModal();
             };
 
-            const closeModal = () => modal.close();
+            const closeModal = () => {
+                modal.classList.add('closing');
+                modal.addEventListener('animationend', () => {
+                    modal.classList.remove('closing');
+                    modal.close();
+                }, { once: true });
+            };
 
 
             const updateRatioFromInputs = () => {

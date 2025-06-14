@@ -3,11 +3,139 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./flag/">
-    <link rel="canonical" href="./flag/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yumeka の 小窝</title>
+    <meta name="description" content="Yumeka 的主页">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-image: linear-gradient(135deg, #fce0e3 0%, #e8deff 50%, #d1eaff 100%);
+            animation: gradient-animation 20s ease infinite;
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .hover-lift {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+    </style>
 </head>
 
-<body>
+<body class="text-slate-700 antialiased overflow-x-hidden">
+
+    <div class="container mx-auto max-w-2xl px-4 py-12 sm:py-20">
+
+        <main class="bg-white/70 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-lg border border-white/50">
+
+            <header class="text-center mb-8">
+                <img src="./assets/avatar.jpg" alt="Yumeka的头像"
+                    class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-white shadow-md">
+                <h1
+                    class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 tracking-wider">
+                    Yumeka の 小窝
+                </h1>
+
+                <p class="text-slate-500 mt-2 text-sm">@KlxPiao</p>
+            </header>
+
+            <section class="mb-10">
+                <h2
+                    class="text-xl font-bold text-slate-800 border-b-2 border-purple-200 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-address-card text-purple-500"></i>
+                    关于我
+                </h2>
+                <p class="mb-4 text-base leading-relaxed">
+                    你好~ 这里是 Yumeka，一个普通的大学生，喜欢写代码、听音乐和玩游戏。很高兴能在这里与你相遇，我 <span
+                        class="font-semibold text-pink-500">喜欢和善良的人交朋友</span>。
+                </p>
+                <div class="flex flex-wrap gap-2 text-sm">
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
+                    <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
+                    <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">理想主义者</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
+                </div>
+            </section>
+
+            <section class="mb-10">
+                <h2
+                    class="text-xl font-bold text-slate-800 border-b-2 border-pink-200 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-door-open text-pink-500"></i>
+                    传送门
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a href="./flag/" target="_blank"
+                        class="hover-lift block bg-gradient-to-r from-indigo-100 to-purple-100 p-5 rounded-lg shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-1">LGBTQIA+ 骄傲旗帜生成器</h3>
+                        <p class="text-sm text-slate-600">一个为爱制作的小工具</p>
+                    </a>
+
+                    <a href="https://github.com/miniyu157/YumekaBlog" target="_blank"
+                        class="hover-lift block bg-slate-100 p-5 rounded-lg shadow-sm opacity-50">
+                        <h3 class="font-bold text-slate-800 mb-1">个人博客 (施工中)</h3>
+                        <p class="text-sm text-slate-600">单击查看仓库</p>
+                    </a>
+                </div>
+            </section>
+
+            <section>
+                <h2
+                    class="text-xl font-bold text-slate-800 border-b-2 border-sky-200 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-sky-500"></i>
+                    找到我
+                </h2>
+                <div class="flex items-center justify-center gap-6 text-2xl">
+                    <a href="https://github.com/miniyu157" target="_blank"
+                        class="text-slate-500 hover:text-slate-900 transition-colors" aria-label="GitHub">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                    <a href="https://x.com/KlxPiao" target="_blank"
+                        class="text-slate-500 hover:text-black transition-colors" aria-label="X/Twitter">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="https://wpa.qq.com/msgrd?v=3&uin=1979287894&site=qq&menu=yes" target="_blank"
+                        class="text-slate-500 hover:text-black transition-colors" aria-label="TencentQQ">
+                        <i class="fa-brands fa-qq"></i>
+                    </a>
+                    <a href="https://space.bilibili.com/1650726013" target="_blank"
+                        class="text-slate-500 hover:text-blue-500 transition-colors" aria-label="Bilibili">
+                        <i class="fa-brands fa-bilibili"></i>
+                    </a>
+                    <a href="mailto:klxpiao@elecho.dev" class="text-slate-500 hover:text-red-500 transition-colors"
+                        aria-label="Email">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-10 text-sm text-slate-600/90 font-light">
+            <p class="mt-2 opacity-70">&copy; 2025 KlxPiao. All rights reserved.</p>
+        </footer>
+
+    </div>
 
 </body>
 

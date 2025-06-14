@@ -125,6 +125,44 @@
                 opacity: 0;
             }
         }
+
+        #toast {
+            transform-origin: center;
+        }
+
+        .toast-entering {
+            animation: toast-in 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+        }
+
+        .toast-exiting {
+            animation: toast-out 0.3s cubic-bezier(0.550, 0.055, 0.675, 0.190) forwards;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: scale(1.1);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes toast-out {
+            from {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            to {
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
     </style>
 </head>
 
@@ -236,7 +274,7 @@
                 <div class="mb-6">
                     <h3 class="text-base font-semibold text-slate-800 mb-3">或手动设置 (px)</h3>
                     <div class="flex items-center gap-2">
-                        <button id="open-advanced-editor-btn"
+                        <button id="open-size-editor-btn"
                             class="p-2 border border-slate-300 rounded-md hover:bg-slate-100 transition-colors"
                             aria-label="尺寸编辑器">
                             <i class="fas fa-wand-magic-sparkles text-slate-600"></i>
@@ -283,10 +321,6 @@
                         <i class="fas fa-download mr-2"></i> 生成并下载
                     </button>
                 </div>
-                <div id="toast"
-                    class="fixed bottom-5 right-5 bg-slate-800 text-white px-5 py-2 rounded-lg shadow-xl opacity-0 translate-y-4 transition-all duration-300">
-                    已复制到剪贴板！
-                </div>
             </section>
 
             <section id="color-standards">
@@ -302,12 +336,12 @@
         </footer>
     </div>
 
-    <dialog id="advanced-editor-modal"
+    <dialog id="size-editor-modal"
         class="w-full max-w-lg p-6 rounded-xl shadow-xl border border-slate-200 backdrop:bg-slate-900/50">
         <div>
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-900">尺寸编辑器</h3>
-                <button id="close-advanced-editor-btn" class="text-slate-400 hover:text-slate-600"><i
+                <button id="close-size-editor-btn" class="text-slate-400 hover:text-slate-600"><i
                         class="fas fa-times fa-lg"></i></button>
             </div>
             <div>
@@ -361,16 +395,20 @@
                     </div>
                 </div>
                 <div class="mt-8 flex justify-end gap-3">
-                    <button id="cancel-advanced-editor-btn"
+                    <button id="cancel-size-editor-btn"
                         class="px-5 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors font-semibold select-none">取消</button>
-                    <button id="apply-advanced-editor-btn"
+                    <button id="apply-size-editor-btn"
                         class="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold shadow hover:shadow-md select-none">应用尺寸</button>
                 </div>
             </div>
         </div>
     </dialog>
 
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-5 py-2 rounded-lg shadow-xl hidden">
+    </div>
+
     <script>
+        // 当前状态
         const state = {
             width: 1920,
             height: 1080,
@@ -379,146 +417,76 @@
             currentFlag: 'pride'
         };
 
-        const widthInput = document.getElementById('width');
-        const heightInput = document.getElementById('height');
-        const downloadButton = document.getElementById('download-btn');
-        const pngButton = document.getElementById('format-png');
-        const jpgButton = document.getElementById('format-jpg');
-        const orientationHorizontalButton = document.getElementById('orientation-horizontal');
-        const orientationVerticalButton = document.getElementById('orientation-vertical');
-        const toast = document.getElementById('toast');
-        const timeEl = document.getElementById('current-time');
-        const colorTitle = document.getElementById('color-title');
-        const flagButtonsContainer = document.getElementById('flag-buttons-container');
-        const colorCardsContainer = document.getElementById('color-cards-container');
+        // 获取 DOM 元素
+        const widthInput = document.getElementById('width');                                   // 宽度输入框
+        const heightInput = document.getElementById('height');                                 // 高度输入框
+        const downloadButton = document.getElementById('download-btn');                        // 下载按钮
+        const pngButton = document.getElementById('format-png');                               // PNG格式按钮
+        const jpgButton = document.getElementById('format-jpg');                               // JPG格式按钮
+        const orientationHorizontalButton = document.getElementById('orientation-horizontal'); // 水平方向按钮
+        const orientationVerticalButton = document.getElementById('orientation-vertical');     // 垂直方向按钮
+        const toast = document.getElementById('toast');                                        // 提示消息框
+        const timeEl = document.getElementById('current-time');                                // 显示当前时间的元素
+        const colorTitle = document.getElementById('color-title');                             // 颜色标准标题
+        const flagButtonsContainer = document.getElementById('flag-buttons-container');        // 旗帜选择按钮的容器
+        const colorCardsContainer = document.getElementById('color-cards-container');          // 颜色卡片容器
 
+        // 定义各种旗帜的数据
         const flags = {
-            pride: {
-                name: '彩虹 (Pride)',
-                id: 'pride',
-                colors: [
-                    { name: '红色', hex: '#E40303', rgb: '228, 3, 3', cmyk: '0, 99, 99, 11', pms: '185 C' },
-                    { name: '橙色', hex: '#FF8C00', rgb: '255, 140, 0', cmyk: '0, 45, 100, 0', pms: '1505 C' },
-                    { name: '黄色', hex: '#FFED00', rgb: '255, 237, 0', cmyk: '0, 7, 100, 0', pms: 'Yellow C' },
-                    { name: '绿色', hex: '#008026', rgb: '0, 128, 38', cmyk: '100, 0, 70, 50', pms: '7726 C' },
-                    { name: '蓝色', hex: '#004DFF', rgb: '0, 77, 255', cmyk: '100, 70, 0, 0', pms: '286 C' },
-                    { name: '紫色', hex: '#750787', rgb: '117, 7, 135', cmyk: '13, 95, 0, 47', pms: '259 C' },
-                ],
-                pattern: ['#E40303', '#FF8C00', '#FFED00', '#008026', '#004DFF', '#750787']
-            },
-            transgender: {
-                name: '跨性别 (Transgender)',
-                id: 'transgender',
-                colors: [
-                    { name: '淡蓝色', hex: '#5BCEFA', rgb: '91, 206, 250', cmyk: '63, 18, 0, 2', pms: '2345 C' },
-                    { name: '淡粉色', hex: '#F5A9B8', rgb: '245, 169, 184', cmyk: '0, 31, 25, 4', pms: '2036 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                ],
-                pattern: ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA']
-            },
-            bisexual: {
-                name: '双性恋 (Bisexual)',
-                id: 'bisexual',
-                colors: [
-                    { name: '粉色', hex: '#D60270', rgb: '214, 2, 112', cmyk: '0, 99, 48, 16', pms: '226 C' },
-                    { name: '紫色', hex: '#9B4F96', rgb: '155, 79, 150', cmyk: '0, 49, 3, 39', pms: '2415 C' },
-                    { name: '蓝色', hex: '#0038A8', rgb: '0, 56, 168', cmyk: '100, 67, 0, 34', pms: '286 C' },
-                ],
-                draw: (ctx, width, height, isVertical) => {
-                    const stripes = ['#D60270', '#9B4F96', '#0038A8'];
-                    if (isVertical) {
-                        const totalRatio = 5;
-                        ctx.fillStyle = stripes[0]; ctx.fillRect(0, 0, width * 2 / totalRatio, height);
-                        ctx.fillStyle = stripes[1]; ctx.fillRect(width * 2 / totalRatio, 0, width * 1 / totalRatio, height);
-                        ctx.fillStyle = stripes[2]; ctx.fillRect(width * 3 / totalRatio, 0, width * 2 / totalRatio, height);
-                    } else {
-                        const totalRatio = 5;
-                        ctx.fillStyle = stripes[0]; ctx.fillRect(0, 0, width, height * 2 / totalRatio);
-                        ctx.fillStyle = stripes[1]; ctx.fillRect(0, height * 2 / totalRatio, width, height * 1 / totalRatio);
-                        ctx.fillStyle = stripes[2]; ctx.fillRect(0, height * 3 / totalRatio, width, height * 2 / totalRatio);
-                    }
-                }
-            },
-            pansexual: {
-                name: '泛性恋 (Pansexual)',
-                id: 'pansexual',
-                colors: [
-                    { name: '粉色', hex: '#FF218C', rgb: '255, 33, 140', cmyk: '0, 87, 45, 0', pms: '212 C' },
-                    { name: '黄色', hex: '#FFD800', rgb: '255, 216, 0', cmyk: '0, 15, 100, 0', pms: 'Yellow C' },
-                    { name: '青色', hex: '#21B1FF', rgb: '33, 177, 255', cmyk: '87, 31, 0, 0', pms: '2925 C' },
-                ],
-                pattern: ['#FF218C', '#FFD800', '#21B1FF']
-            },
-            asexual: {
-                name: '无性恋 (Asexual)',
-                id: 'asexual',
-                colors: [
-                    { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' },
-                    { name: '灰色', hex: '#A3A3A3', rgb: '163, 163, 163', cmyk: '0, 0, 0, 36', pms: 'Cool Gray 7 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '紫色', hex: '#800080', rgb: '128, 0, 128', cmyk: '0, 100, 0, 50', pms: '2597 C' },
-                ],
-                pattern: ['#000000', '#A3A3A3', '#FFFFFF', '#800080']
-            },
-            nonbinary: {
-                name: '非二元 (Non-binary)',
-                id: 'nonbinary',
-                colors: [
-                    { name: '黄色', hex: '#FCF434', rgb: '252, 244, 52', cmyk: '0, 3, 79, 1', pms: '394 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '紫色', hex: '#9C59D1', rgb: '156, 89, 209', cmyk: '25, 57, 0, 18', pms: '2655 C' },
-                    { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' },
-                ],
-                pattern: ['#FCF434', '#FFFFFF', '#9C59D1', '#000000']
-            },
-            genderqueer: {
-                name: '性别酷儿 (Genderqueer)',
-                id: 'genderqueer',
-                colors: [
-                    { name: '薰衣草色', hex: '#B57EDC', rgb: '181, 126, 220', cmyk: '18, 43, 0, 14', pms: '257 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '暗草绿色', hex: '#4A8123', rgb: '74, 129, 35', cmyk: '43, 0, 73, 50', pms: '363 C' },
-                ],
-                pattern: ['#B57EDC', '#FFFFFF', '#4A8123']
-            },
-            genderfluid: {
-                name: '流动性别 (Genderfluid)',
-                id: 'genderfluid',
-                colors: [
-                    { name: '粉色', hex: '#FF76A4', rgb: '255, 118, 164', cmyk: '0, 54, 36, 0', pms: '1905 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '紫色', hex: '#C011D7', rgb: '192, 17, 215', cmyk: '11, 92, 0, 16', pms: '253 C' },
-                    { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' },
-                    { name: '蓝色', hex: '#303CBE', rgb: '48, 60, 190', cmyk: '75, 68, 0, 25', pms: '2728 C' },
-                ],
-                pattern: ['#FF76A4', '#FFFFFF', '#C011D7', '#000000', '#303CBE']
-            },
-            agender: {
-                name: '无性别 (Agender)',
-                id: 'agender',
-                colors: [
-                    { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' },
-                    { name: '灰色', hex: '#B9B9B9', rgb: '185, 185, 185', cmyk: '0, 0, 0, 27', pms: 'Cool Gray 5 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '浅绿色', hex: '#B5F582', rgb: '181, 245, 130', cmyk: '26, 0, 47, 4', pms: '372 C' },
-                ],
-                pattern: ['#000000', '#B9B9B9', '#FFFFFF', '#B5F582', '#FFFFFF', '#B9B9B9', '#000000']
-            },
-            aromantic: {
-                name: '芳香谱 (Aromantic)',
-                id: 'aromantic',
-                colors: [
-                    { name: '深绿色', hex: '#3DA542', rgb: '61, 165, 66', cmyk: '63, 0, 60, 35', pms: '354 C' },
-                    { name: '浅绿色', hex: '#A7D379', rgb: '167, 211, 121', cmyk: '21, 0, 43, 17', pms: '578 C' },
-                    { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' },
-                    { name: '灰色', hex: '#A9A9A9', rgb: '169, 169, 169', cmyk: '0, 0, 0, 34', pms: 'Cool Gray 7 C' },
-                    { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' },
-                ],
-                pattern: ['#3DA542', '#A7D379', '#FFFFFF', '#A9A9A9', '#000000']
-            }
+            pride: { name: '彩虹 (Pride)', id: 'pride', colors: [{ name: '红色', hex: '#E40303', rgb: '228, 3, 3', cmyk: '0, 99, 99, 11', pms: '185 C' }, { name: '橙色', hex: '#FF8C00', rgb: '255, 140, 0', cmyk: '0, 45, 100, 0', pms: '1505 C' }, { name: '黄色', hex: '#FFED00', rgb: '255, 237, 0', cmyk: '0, 7, 100, 0', pms: 'Yellow C' }, { name: '绿色', hex: '#008026', rgb: '0, 128, 38', cmyk: '100, 0, 70, 50', pms: '7726 C' }, { name: '蓝色', hex: '#004DFF', rgb: '0, 77, 255', cmyk: '100, 70, 0, 0', pms: '286 C' }, { name: '紫色', hex: '#750787', rgb: '117, 7, 135', cmyk: '13, 95, 0, 47', pms: '259 C' }], pattern: ['#E40303', '#FF8C00', '#FFED00', '#008026', '#004DFF', '#750787'] },
+            transgender: { name: '跨性别 (Transgender)', id: 'transgender', colors: [{ name: '淡蓝色', hex: '#5BCEFA', rgb: '91, 206, 250', cmyk: '63, 18, 0, 2', pms: '2345 C' }, { name: '淡粉色', hex: '#F5A9B8', rgb: '245, 169, 184', cmyk: '0, 31, 25, 4', pms: '2036 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }], pattern: ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA'] },
+            bisexual: { name: '双性恋 (Bisexual)', id: 'bisexual', colors: [{ name: '粉色', hex: '#D60270', rgb: '214, 2, 112', cmyk: '0, 99, 48, 16', pms: '226 C' }, { name: '紫色', hex: '#9B4F96', rgb: '155, 79, 150', cmyk: '0, 49, 3, 39', pms: '2415 C' }, { name: '蓝色', hex: '#0038A8', rgb: '0, 56, 168', cmyk: '100, 67, 0, 34', pms: '286 C' }], draw: (ctx, width, height, isVertical) => { const stripes = ['#D60270', '#9B4F96', '#0038A8']; if (isVertical) { const r = 5; ctx.fillStyle = stripes[0]; ctx.fillRect(0, 0, width * 2 / r, height); ctx.fillStyle = stripes[1]; ctx.fillRect(width * 2 / r, 0, width * 1 / r, height); ctx.fillStyle = stripes[2]; ctx.fillRect(width * 3 / r, 0, width * 2 / r, height); } else { const r = 5; ctx.fillStyle = stripes[0]; ctx.fillRect(0, 0, width, height * 2 / r); ctx.fillStyle = stripes[1]; ctx.fillRect(0, height * 2 / r, width, height * 1 / r); ctx.fillStyle = stripes[2]; ctx.fillRect(0, height * 3 / r, width, height * 2 / r); } } },
+            pansexual: { name: '泛性恋 (Pansexual)', id: 'pansexual', colors: [{ name: '粉色', hex: '#FF218C', rgb: '255, 33, 140', cmyk: '0, 87, 45, 0', pms: '212 C' }, { name: '黄色', hex: '#FFD800', rgb: '255, 216, 0', cmyk: '0, 15, 100, 0', pms: 'Yellow C' }, { name: '青色', hex: '#21B1FF', rgb: '33, 177, 255', cmyk: '87, 31, 0, 0', pms: '2925 C' }], pattern: ['#FF218C', '#FFD800', '#21B1FF'] },
+            asexual: { name: '无性恋 (Asexual)', id: 'asexual', colors: [{ name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' }, { name: '灰色', hex: '#A3A3A3', rgb: '163, 163, 163', cmyk: '0, 0, 0, 36', pms: 'Cool Gray 7 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '紫色', hex: '#800080', rgb: '128, 0, 128', cmyk: '0, 100, 0, 50', pms: '2597 C' }], pattern: ['#000000', '#A3A3A3', '#FFFFFF', '#800080'] },
+            nonbinary: { name: '非二元 (Non-binary)', id: 'nonbinary', colors: [{ name: '黄色', hex: '#FCF434', rgb: '252, 244, 52', cmyk: '0, 3, 79, 1', pms: '394 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '紫色', hex: '#9C59D1', rgb: '156, 89, 209', cmyk: '25, 57, 0, 18', pms: '2655 C' }, { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' }], pattern: ['#FCF434', '#FFFFFF', '#9C59D1', '#000000'] },
+            genderqueer: { name: '性别酷儿 (Genderqueer)', id: 'genderqueer', colors: [{ name: '薰衣草色', hex: '#B57EDC', rgb: '181, 126, 220', cmyk: '18, 43, 0, 14', pms: '257 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '暗草绿色', hex: '#4A8123', rgb: '74, 129, 35', cmyk: '43, 0, 73, 50', pms: '363 C' }], pattern: ['#B57EDC', '#FFFFFF', '#4A8123'] },
+            genderfluid: { name: '流动性别 (Genderfluid)', id: 'genderfluid', colors: [{ name: '粉色', hex: '#FF76A4', rgb: '255, 118, 164', cmyk: '0, 54, 36, 0', pms: '1905 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '紫色', hex: '#C011D7', rgb: '192, 17, 215', cmyk: '11, 92, 0, 16', pms: '253 C' }, { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' }, { name: '蓝色', hex: '#303CBE', rgb: '48, 60, 190', cmyk: '75, 68, 0, 25', pms: '2728 C' }], pattern: ['#FF76A4', '#FFFFFF', '#C011D7', '#000000', '#303CBE'] },
+            agender: { name: '无性别 (Agender)', id: 'agender', colors: [{ name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' }, { name: '灰色', hex: '#B9B9B9', rgb: '185, 185, 185', cmyk: '0, 0, 0, 27', pms: 'Cool Gray 5 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '浅绿色', hex: '#B5F582', rgb: '181, 245, 130', cmyk: '26, 0, 47, 4', pms: '372 C' }], pattern: ['#000000', '#B9B9B9', '#FFFFFF', '#B5F582', '#FFFFFF', '#B9B9B9', '#000000'] },
+            aromantic: { name: '芳香谱 (Aromantic)', id: 'aromantic', colors: [{ name: '深绿色', hex: '#3DA542', rgb: '61, 165, 66', cmyk: '63, 0, 60, 35', pms: '354 C' }, { name: '浅绿色', hex: '#A7D379', rgb: '167, 211, 121', cmyk: '21, 0, 43, 17', pms: '578 C' }, { name: '白色', hex: '#FFFFFF', rgb: '255, 255, 255', cmyk: '0, 0, 0, 0', pms: 'White' }, { name: '灰色', hex: '#A9A9A9', rgb: '169, 169, 169', cmyk: '0, 0, 0, 34', pms: 'Cool Gray 7 C' }, { name: '黑色', hex: '#000000', rgb: '0, 0, 0', cmyk: '0, 0, 0, 100', pms: 'Black C' }], pattern: ['#3DA542', '#A7D379', '#FFFFFF', '#A9A9A9', '#000000'] }
         };
 
+        // toast 定时器
+        let toastTimer = null;
+
+        // 显示提示消息
+        function showToast(message) {
+            // 清除之前的定时器，防止消息过早消失
+            clearTimeout(toastTimer);
+
+            // 设置提示消息内容
+            toast.textContent = message;
+            // 移除可能存在的CSS类，重置状态
+            toast.classList.remove('hidden', 'toast-exiting', 'toast-entering');
+
+            // 强制浏览器重新计算样式，以便动画能够重新触发
+            void toast.offsetWidth;
+            // 添加进入动画的CSS类
+            toast.classList.add('toast-entering');
+        }
+
+        // 监听提示消息框的动画结束事件
+        toast.addEventListener('animationend', (event) => {
+            // 如果是进入动画结束
+            if (event.animationName === 'toast-in') {
+                // 移除进入动画的CSS类
+                toast.classList.remove('toast-entering');
+
+                // 设置一个定时器，在2秒后添加退出动画
+                toastTimer = setTimeout(() => {
+                    toast.classList.add('toast-exiting');
+                }, 2000);
+
+                // 如果是退出动画结束
+            } else if (event.animationName === 'toast-out') {
+                // 移除退出动画的CSS类并隐藏元素
+                toast.classList.remove('toast-exiting');
+                toast.classList.add('hidden');
+            }
+        });
+
+        // 更新用户界面
         function updateUI() {
+            // 根据 state 对象更新输入框的值和按钮的激活状态
             widthInput.value = state.width;
             heightInput.value = state.height;
             pngButton.classList.toggle('active', state.format === 'png');
@@ -526,107 +494,116 @@
             orientationHorizontalButton.classList.toggle('active', state.orientation === 'horizontal');
             orientationVerticalButton.classList.toggle('active', state.orientation === 'vertical');
 
+            // 更新旗帜选择按钮的激活状态
             document.querySelectorAll('.flag-selector-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.flag === state.currentFlag);
             });
 
+            // 更新颜色信息
             const flagData = flags[state.currentFlag];
             colorTitle.textContent = `${flagData.name} 颜色标准`;
             updateColorCards();
         }
 
+        // 切换旗帜
         function switchFlag(flagKey) {
-            if (!flags[flagKey]) return;
-            state.currentFlag = flagKey;
-            updateUI();
+            if (!flags[flagKey]) return; // 如果旗帜不存在，则不执行任何操作
+            state.currentFlag = flagKey; // 更新当前旗帜
+            updateUI(); // 更新界面
         }
 
+        // 动态生成旗帜选择按钮
         function generateFlagButtons() {
-            flagButtonsContainer.innerHTML = '';
+            flagButtonsContainer.innerHTML = ''; // 清空容器
             for (const key in flags) {
                 const flag = flags[key];
+                // 获取旗帜的颜色条纹模式
                 const pattern = flag.pattern || flag.colors.map(c => c.hex);
                 const stripeCount = pattern.length;
                 let svgStops = '';
+                // 为SVG渐变生成<stop>元素
                 pattern.forEach((color, index) => {
                     svgStops += `<stop offset="${(index / stripeCount) * 100}%" stop-color="${color}" /><stop offset="${((index + 1) / stripeCount) * 100}%" stop-color="${color}" />`;
                 });
+                // 创建SVG预览图像
                 const svgPreview = `<svg width="24" height="15" viewBox="0 0 24 15" class="rounded-sm shadow-inner flex-shrink-0" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-${key}" x1="0%" y1="0%" x2="0%" y2="100%">${svgStops}</linearGradient></defs><rect width="24" height="15" fill="url(#grad-${key})" /></svg>`;
+                // 创建按钮元素
                 const button = document.createElement('button');
                 button.className = 'flag-selector-btn flex items-center gap-3 w-full p-2 border-2 border-slate-300 rounded-md text-sm font-semibold text-left';
                 button.dataset.flag = key;
                 button.onclick = () => switchFlag(key);
                 button.innerHTML = `${svgPreview} <span class="truncate">${flag.name}</span>`;
-                flagButtonsContainer.appendChild(button);
+                flagButtonsContainer.appendChild(button); // 将按钮添加到容器中
             }
         }
 
+        // 更新颜色卡片
         function updateColorCards() {
-            colorCardsContainer.innerHTML = '';
+            colorCardsContainer.innerHTML = ''; // 清空容器
             const flagColors = flags[state.currentFlag].colors;
+
+            // 遍历当前旗帜的每种颜色并创建卡片
             flagColors.forEach((color, i) => {
                 const cardId = `${state.currentFlag}-${i}`;
                 const card = `
-                <div class="color-card bg-white p-6 rounded-xl shadow-sm hover:shadow-lg border border-slate-200">
-                    <div class="w-full h-16 rounded-md mb-4 ${color.hex === '#FFFFFF' ? 'border' : ''}" style="background-color: ${color.hex};"></div>
-                    <h3 class="text-xl font-semibold mb-3 text-slate-800">${color.name}</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between items-center"><span>HEX:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="hex-${cardId}">${color.hex}</code><button class="copy-btn" onclick="copyToClipboard('#hex-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
-                        <div class="flex justify-between items-center"><span>RGB:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="rgb-${cardId}">${color.rgb}</code><button class="copy-btn" onclick="copyToClipboard('#rgb-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
-                        <div class="flex justify-between items-center"><span>CMYK:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="cmyk-${cardId}">${color.cmyk}</code><button class="copy-btn" onclick="copyToClipboard('#cmyk-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
-                        <div class="flex justify-between items-center"><span>Pantone:</span><code class="bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="pms-${cardId}">${color.pms}</code><button class="copy-btn" onclick="copyToClipboard('#pms-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
-                    </div>
-                </div>`;
-                colorCardsContainer.innerHTML += card;
+                    <div class="color-card bg-white p-6 rounded-xl shadow-sm hover:shadow-lg border border-slate-200">
+                        <div class="w-full h-16 rounded-md mb-4 ${color.hex === '#FFFFFF' ? 'border' : ''}" style="background-color: ${color.hex};"></div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">${color.name}</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center"><span>HEX:</span><code class="mx-4 truncate bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="hex-${cardId}">${color.hex}</code><button class="copy-btn" onclick="copyToClipboard('#hex-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>RGB:</span><code class="mx-4 truncate bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="rgb-${cardId}">${color.rgb}</code><button class="copy-btn" onclick="copyToClipboard('#rgb-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>CMYK:</span><code class="mx-4 truncate bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="cmyk-${cardId}">${color.cmyk}</code><button class="copy-btn" onclick="copyToClipboard('#cmyk-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                            <div class="flex justify-between items-center"><span>Pantone:</span><code class="mx-4 truncate bg-slate-100 px-2 py-1 rounded font-mono text-slate-700" id="pms-${cardId}">${color.pms}</code><button class="copy-btn" onclick="copyToClipboard('#pms-${cardId}')"><i class="fa-regular fa-copy text-slate-500 hover:text-blue-500"></i></button></div>
+                        </div>
+                    </div>`;
+                colorCardsContainer.innerHTML += card; // 将卡片HTML添加到容器
             });
         }
 
+        // 设置预设尺寸
         function setPreset(width, height) {
             state.width = width;
             state.height = height;
+            // 根据宽高自动判断方向
             state.orientation = (width >= height) ? 'horizontal' : 'vertical';
-            updateUI();
+            updateUI(); // 更新界面
         }
 
+        // 设置图像格式
         function setFormat(format) {
             state.format = format;
             updateUI();
         }
 
+        // 设置图像方向
         function setOrientation(orientation) {
             state.orientation = orientation;
             updateUI();
         }
 
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.remove('opacity-0', 'translate-y-4');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-4');
-            }, 2000);
-        }
-
+        // 复制文本到剪贴板
         function copyToClipboard(elementSelector) {
             const element = document.querySelector(elementSelector);
             if (element && navigator.clipboard) {
                 navigator.clipboard.writeText(element.innerText).then(() => {
-                    showToast('已复制到剪贴板！');
+                    showToast('已复制到剪贴板！'); // 成功提示
                 }).catch(err => {
                     console.error('无法复制: ', err);
-                    showToast('复制失败！');
+                    showToast('复制失败！'); // 失败提示
                 });
             }
         }
 
+        // 绘制标准条纹旗帜的函数
         function drawStripedFlag(ctx, width, height, isVertical, colors) {
             const stripeCount = colors.length;
-            if (isVertical) {
+            if (isVertical) { // 垂直条纹
                 const stripeWidth = width / stripeCount;
                 colors.forEach((color, i) => {
                     ctx.fillStyle = color;
                     ctx.fillRect(i * stripeWidth, 0, stripeWidth, height);
                 });
-            } else {
+            } else { // 水平条纹
                 const stripeHeight = height / stripeCount;
                 colors.forEach((color, i) => {
                     ctx.fillStyle = color;
@@ -635,42 +612,54 @@
             }
         }
 
+        // 绘制旗帜的总函数
         function drawFlag(ctx, width, height, orientation) {
             const flagData = flags[state.currentFlag];
             const isVertical = orientation === 'vertical';
+            // 如果旗帜有自定义的绘制函数，则调用它
             if (typeof flagData.draw === 'function') {
                 flagData.draw(ctx, width, height, isVertical);
+                // 否则，如果它有颜色模式，就绘制标准条纹旗帜
             } else if (flagData.pattern) {
                 drawStripedFlag(ctx, width, height, isVertical, flagData.pattern);
             }
         }
 
+        // 处理下载按钮点击事件
         function handleDownload() {
             const width = parseInt(widthInput.value, 10);
             const height = parseInt(heightInput.value, 10);
+            // 验证输入是否有效
             if (!width || !height || width <= 0 || height <= 0) {
-                alert("请输入有效的宽度和高度！");
+                showToast("请输入有效的宽度和高度！");
                 return;
             }
             state.width = width;
             state.height = height;
+            // 创建一个临时的canvas元素用于绘制
             const canvas = document.createElement('canvas');
             canvas.width = state.width;
             canvas.height = state.height;
             const ctx = canvas.getContext('2d');
+            // 先填充白色背景，以防JPG格式出现黑色背景
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, state.width, state.height);
+            // 绘制旗帜
             drawFlag(ctx, state.width, state.height, state.orientation);
+            // 根据所选格式确定MIME类型
             const mimeType = state.format === 'jpg' ? 'image/jpeg' : `image/${state.format}`;
+            // JPG格式可以指定图片质量
             const quality = state.format === 'jpg' ? 0.92 : undefined;
+            // 创建一个链接元素来触发下载
             const link = document.createElement('a');
             link.href = canvas.toDataURL(mimeType, quality);
             link.download = `${flags[state.currentFlag].id}-flag-${state.width}x${state.height}-${state.orientation}.${state.format}`;
             document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            link.click(); // 模拟点击下载
+            document.body.removeChild(link); // 下载后移除链接
         }
 
+        // 更新显示的时间
         function updateTime() {
             const now = new Date();
             timeEl.textContent = now.toLocaleString('zh-CN', {
@@ -679,9 +668,10 @@
             });
         }
 
+        // 为下载按钮和输入框添加事件监听
         downloadButton.addEventListener('click', handleDownload);
         widthInput.addEventListener('change', () => {
-            state.width = parseInt(widthInput.value, 10) || 0
+            state.width = parseInt(widthInput.value, 10) || 0;
             state.orientation = (state.width >= state.height) ? 'horizontal' : 'vertical';
             updateUI();
         });
@@ -691,20 +681,23 @@
             updateUI();
         });
 
+        // 页面加载完成后执行初始化操作
         document.addEventListener('DOMContentLoaded', () => {
-            generateFlagButtons();
-            switchFlag(state.currentFlag);
-            setPreset(1920, 1080);
-            updateTime();
-            setInterval(updateTime, 1000);
+            generateFlagButtons();         // 生成旗帜按钮
+            switchFlag(state.currentFlag); // 设置默认旗帜
+            setPreset(1920, 1080);         // 设置默认尺寸
+            updateTime();                  // 首次更新时间
+            setInterval(updateTime, 1000); // 每秒更新时间
         });
 
+        // ---- 尺寸编辑器模态框相关逻辑 ----
         document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('advanced-editor-modal');
-            const openBtn = document.getElementById('open-advanced-editor-btn');
-            const closeBtn = document.getElementById('close-advanced-editor-btn');
-            const cancelBtn = document.getElementById('cancel-advanced-editor-btn');
-            const applyBtn = document.getElementById('apply-advanced-editor-btn');
+            // 获取模态框及其内部的元素
+            const modal = document.getElementById('size-editor-modal');
+            const openBtn = document.getElementById('open-size-editor-btn');
+            const closeBtn = document.getElementById('close-size-editor-btn');
+            const cancelBtn = document.getElementById('cancel-size-editor-btn');
+            const applyBtn = document.getElementById('apply-size-editor-btn');
             const modalWidthInput = document.getElementById('modal-width');
             const modalHeightInput = document.getElementById('modal-height');
             const swapDimensionsBtn = document.getElementById('swap-dimensions-btn');
@@ -712,39 +705,44 @@
             const lockControls = document.getElementById('lock-controls');
             const lockLabel = document.getElementById('lock-label');
             const lockIcon = document.getElementById('lock-icon');
-            let lockedDimension = 'width';
-            let currentRatio = null;
 
+            // 定义模态框内部状态变量
+            let lockedDimension = 'width'; // 锁定哪个维度 ('width' 或 'height')
+            let currentRatio = null; // 当前的宽高比
+
+            // 打开模态框
             const openModal = () => {
-                modalWidthInput.value = widthInput.value;
+                modalWidthInput.value = widthInput.value; // 同步主界面的宽高
                 modalHeightInput.value = heightInput.value;
-                updateRatioFromInputs();
-                updateLockUI();
-                modal.showModal();
+                updateRatioFromInputs(); // 根据当前输入更新宽高比显示
+                updateLockUI(); // 更新锁定UI
+                modal.showModal(); // HTML <dialog> 元素的标准方法
             };
 
+            // 关闭模态框
             const closeModal = () => {
-                modal.classList.add('closing');
+                modal.classList.add('closing'); // 添加关闭动画
                 modal.addEventListener('animationend', () => {
                     modal.classList.remove('closing');
-                    modal.close();
-                }, { once: true });
+                    modal.close(); // HTML <dialog> 元素的标准方法
+                }, { once: true }); // 确保事件只触发一次
             };
 
-
+            // 根据输入框的值更新和匹配宽高比按钮
             const updateRatioFromInputs = () => {
                 const w = parseFloat(modalWidthInput.value);
                 const h = parseFloat(modalHeightInput.value);
-                let bestMatch = 'custom';
+                let bestMatch = 'custom'; // 默认为自定义比例
                 if (w && h) {
                     const currentRatioValue = w / h;
                     let minDiff = Infinity;
+                    // 遍历所有预设比例按钮，找到最接近的
                     ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => {
                         const ratioStr = btn.dataset.ratio;
                         if (ratioStr !== 'custom') {
-                            const ratio = eval(ratioStr);
+                            const ratio = eval(ratioStr); // 使用eval计算字符串表达式，如 "16/9"
                             const diff = Math.abs(currentRatioValue - ratio);
-                            if (diff < 0.01 && diff < minDiff) {
+                            if (diff < 0.01 && diff < minDiff) { // 允许一定误差
                                 minDiff = diff;
                                 bestMatch = ratioStr;
                             }
@@ -752,14 +750,17 @@
                     });
                 }
                 currentRatio = bestMatch;
+                // 更新按钮的激活状态
                 ratioButtonsContainer.querySelectorAll('.ratio-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.ratio === bestMatch));
                 updateLockUI();
             };
 
+            // 绑定打开和关闭事件
             openBtn.addEventListener('click', openModal);
             closeBtn.addEventListener('click', closeModal);
             cancelBtn.addEventListener('click', closeModal);
 
+            // 交换宽度和高度
             swapDimensionsBtn.addEventListener('click', () => {
                 const temp = modalWidthInput.value;
                 modalWidthInput.value = modalHeightInput.value;
@@ -767,24 +768,26 @@
                 updateRatioFromInputs();
             });
 
-
+            // 点击模态框背景（遮罩层）时关闭模态框
             modal.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     closeModal();
                 }
             });
 
+            // 更新锁定相关的UI显示
             const updateLockUI = () => {
+                // 重置所有锁定相关的样式
                 modalWidthInput.classList.remove('locked-input');
                 modalHeightInput.classList.remove('locked-input');
                 modalWidthInput.nextElementSibling.classList.add('hidden');
                 modalHeightInput.nextElementSibling.classList.add('hidden');
 
-                if (currentRatio === 'custom') {
+                if (currentRatio === 'custom') { // 自定义比例，不锁定
                     lockLabel.textContent = '未绑定比例';
                     lockIcon.classList.remove('fa-link');
                     lockIcon.classList.add('fa-unlink');
-                } else {
+                } else { // 预设比例，锁定
                     lockIcon.classList.remove('fa-unlink');
                     lockIcon.classList.add('fa-link');
 
@@ -800,6 +803,7 @@
                 }
             };
 
+            // 根据锁定的维度和比例计算另一个维度的值
             const calculateDimensions = () => {
                 if (!currentRatio || currentRatio === 'custom') return;
                 const ratioValue = eval(currentRatio);
@@ -812,6 +816,7 @@
                 }
             };
 
+            // 锁定控件的点击事件，用于切换锁定的维度
             lockControls.addEventListener('click', () => {
                 if (currentRatio !== 'custom') {
                     lockedDimension = lockedDimension === 'width' ? 'height' : 'width';
@@ -820,6 +825,7 @@
                 }
             });
 
+            // 比例按钮容器的点击事件（事件委托）
             ratioButtonsContainer.addEventListener('click', (e) => {
                 if (e.target.tagName === 'BUTTON') {
                     const selectedRatio = e.target.dataset.ratio;
@@ -831,22 +837,33 @@
                 }
             });
 
+            // 监听输入框的输入事件
             modalWidthInput.addEventListener('input', () => {
-                if (lockedDimension === 'width' && currentRatio !== 'custom') calculateDimensions();
-                else updateRatioFromInputs();
+                if (lockedDimension === 'width' && currentRatio !== 'custom') {
+                    calculateDimensions(); // 如果是锁定的维度，则计算另一个维度
+                } else {
+                    updateRatioFromInputs(); // 否则，更新比例
+                }
             });
             modalHeightInput.addEventListener('input', () => {
-                if (lockedDimension === 'height' && currentRatio !== 'custom') calculateDimensions();
-                else updateRatioFromInputs();
+                if (lockedDimension === 'height' && currentRatio !== 'custom') {
+                    calculateDimensions();
+                } else {
+                    updateRatioFromInputs();
+                }
             });
 
+            // "应用"按钮的点击事件
             applyBtn.addEventListener('click', () => {
                 const newWidth = parseInt(modalWidthInput.value, 10);
                 const newHeight = parseInt(modalHeightInput.value, 10);
-                if (newWidth > 0 && newHeight > 0) setPreset(newWidth, newHeight);
-                closeModal();
+                if (newWidth > 0 && newHeight > 0) {
+                    setPreset(newWidth, newHeight); // 应用新的尺寸到主界面
+                }
+                closeModal(); // 关闭模态框
             });
 
+            // 初始化锁定UI
             updateLockUI();
         });
     </script>

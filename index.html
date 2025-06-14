@@ -11,24 +11,53 @@
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-image: linear-gradient(135deg, #fce0e3 0%, #e8deff 50%, #d1eaff 100%);
-            animation: gradient-animation 20s ease infinite;
-            background-size: 400% 400%;
+        :root {
+            /* 条纹宽度，范围大于 0 */
+            --stripe-width: 15px;
+
+            /* 角度，范围 0-89deg */
+            --angle: 45deg;
+
+            /* 速度 */
+            --speed: 2s;
+
+            /* 方向 */
+            --direction: -1;
+
+            /* 背景颜色 */
+            --bg-color: #f5f3ff;
+
+            /* 条纹颜色 */
+            --stripe-color: #e8deff;
+
+            --full-width: calc(var(--stripe-width) * 2);
+            --size-x: calc(var(--full-width) / sin(var(--angle)));
+            --size-y: calc(var(--full-width) / cos(var(--angle)));
         }
 
-        @keyframes gradient-animation {
-            0% {
-                background-position: 0% 50%;
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+
+            /* 条纹背景 */
+            background-image: repeating-linear-gradient(var(--angle),
+                    var(--stripe-color),
+                    var(--stripe-color) var(--stripe-width),
+                    var(--bg-color) var(--stripe-width),
+                    var(--bg-color) var(--full-width));
+
+            background-size: var(--size-x) var(--size-y);
+
+            animation: plaid-scroll var(--speed) linear infinite;
+        }
+
+        @keyframes plaid-scroll {
+            from {
+                background-position: 0 0;
             }
 
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
+            to {
+                background-position: calc(var(--direction) * var(--size-x)) 0;
             }
         }
 
@@ -39,6 +68,44 @@
         .hover-lift:hover {
             transform: translateY(-6px);
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        #toast {
+            transform-origin: center;
+        }
+
+        .toast-entering {
+            animation: toast-in 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+        }
+
+        .toast-exiting {
+            animation: toast-out 0.3s cubic-bezier(0.550, 0.055, 0.675, 0.190) forwards;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: scale(1.1);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes toast-out {
+            from {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            to {
+                opacity: 0;
+                filter: blur(10px);
+            }
         }
     </style>
 </head>
@@ -52,12 +119,16 @@
             <header class="text-center mb-8">
                 <img src="./assets/avatar.jpg" alt="Yumeka的头像"
                     class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-white shadow-md">
-                <h1
-                    class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 tracking-wider">
-                    Yumeka の 小窝
-                </h1>
 
-                <p class="text-slate-500 mt-2 text-sm">@KlxPiao</p>
+                <div class="">
+                    <h1
+                        class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 tracking-wider">
+                        Yumeka の 小窝
+                    </h1>
+
+                    <p class="text-slate-500 mt-2 text-sm">@KlxPiao</p>
+                </div>
+
             </header>
 
             <section class="mb-10">
@@ -74,7 +145,8 @@
                     <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
                     <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
                     <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
-                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">理想主义者</span>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Idealist</span>
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Aesthete</span>
                     <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
                 </div>
             </section>
@@ -115,8 +187,9 @@
                         class="text-slate-500 hover:text-black transition-colors" aria-label="X/Twitter">
                         <i class="fa-brands fa-x-twitter"></i>
                     </a>
-                    <a href="https://wpa.qq.com/msgrd?v=3&uin=1979287894&site=qq&menu=yes" target="_blank"
-                        class="text-slate-500 hover:text-black transition-colors" aria-label="TencentQQ">
+                    <a onclick="copyQQ()" target="_blank"
+                        class="text-slate-500 hover:text-blue-500 transition-colors cursor-pointer"
+                        aria-label="TencentQQ">
                         <i class="fa-brands fa-qq"></i>
                     </a>
                     <a href="mailto:klxpiao@elecho.dev" class="text-slate-500 hover:text-red-500 transition-colors"
@@ -133,6 +206,63 @@
 
     </div>
 
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-5 py-2 rounded-lg shadow-xl hidden">
+    </div>
+
+    <script>
+        // 复制文本到剪贴板
+        function copyQQ() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText('1979287894').then(() => {
+                    showToast('QQ 号码已复制到剪贴板'); // 成功提示
+                }).catch(err => {
+                    console.error('无法复制: ', err);
+                    showToast('复制失败！'); // 失败提示
+                });
+            }
+        }
+
+        const toast = document.getElementById('toast'); // 提示消息框
+
+        // toast 定时器
+        let toastTimer = null;
+
+        // 显示提示消息
+        function showToast(message) {
+            // 清除之前的定时器，防止消息过早消失
+            clearTimeout(toastTimer);
+
+            // 设置提示消息内容
+            toast.textContent = message;
+            // 移除可能存在的CSS类，重置状态
+            toast.classList.remove('hidden', 'toast-exiting', 'toast-entering');
+
+            // 强制浏览器重新计算样式，以便动画能够重新触发
+            void toast.offsetWidth;
+            // 添加进入动画的CSS类
+            toast.classList.add('toast-entering');
+        }
+
+        // 监听提示消息框的动画结束事件
+        toast.addEventListener('animationend', (event) => {
+            // 如果是进入动画结束
+            if (event.animationName === 'toast-in') {
+                // 移除进入动画的CSS类
+                toast.classList.remove('toast-entering');
+
+                // 设置一个定时器，在2秒后添加退出动画
+                toastTimer = setTimeout(() => {
+                    toast.classList.add('toast-exiting');
+                }, 2000);
+
+                // 如果是退出动画结束
+            } else if (event.animationName === 'toast-out') {
+                // 移除退出动画的CSS类并隐藏元素
+                toast.classList.remove('toast-exiting');
+                toast.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 
 </html>

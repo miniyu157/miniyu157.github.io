@@ -86,7 +86,7 @@
             from {
                 opacity: 0;
                 transform: scale(1.1);
-                filter: blur(10px);
+                filter: blur(5px);
             }
 
             to {
@@ -99,13 +99,56 @@
         @keyframes toast-out {
             from {
                 opacity: 1;
+                transform: scale(1);
                 filter: blur(0);
             }
 
             to {
                 opacity: 0;
-                filter: blur(10px);
+                transform: scale(0.9);
+                filter: blur(5px);
             }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            position: absolute;
+            width: max-content;
+            max-width: 240px;
+            background-color: #1f2937;
+            /* bg-slate-800 */
+            color: #fff;
+            text-align: center;
+            font-weight: 400;
+            /* font-light */
+            font-size: 0.875rem;
+            /* text-sm */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            padding: 8px 12px;
+            z-index: 10;
+            bottom: 140%;
+            /* 向上定位 */
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            opacity: 0;
+            filter: blur(5px);
+            transition: all 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            /* shadow-xl */
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(-50%) scale(1);
         }
     </style>
 </head>
@@ -131,23 +174,138 @@
 
             </header>
 
-            <section class="mb-10">
-                <h2
-                    class="text-xl font-bold text-slate-800 border-b-2 border-purple-200 pb-2 mb-4 flex items-center gap-2">
+            <section class="mb-10 space-y-4">
+                <h2 class="text-xl font-bold text-slate-800 border-b-2 border-purple-200 pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-address-card text-purple-500"></i>
                     关于我
                 </h2>
-                <p class="mb-4 text-base leading-relaxed">
+                <p class="text-base leading-relaxed">
                     你好~ 这里是 Yumeka，一个普通的大学生，喜欢写代码、听音乐和玩游戏。很高兴能在这里与你相遇，我 <span
                         class="font-semibold text-pink-500">喜欢和善良的人交朋友</span>。
                 </p>
-                <div class="flex flex-wrap gap-2 text-sm">
+                <div class="flex flex-wrap gap-2 text-sm select-none">
                     <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
                     <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
-                    <span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
+                    <span id="infp-toggle" class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
                     <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Idealist</span>
                     <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Aesthete</span>
                     <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
+                </div>
+
+                <div id="infp-details"
+                    class="hidden border-2 border-slate-200/80 p-5 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+
+                    <div class="sm:col-span-2 space-y-2">
+                        <h3 class="text-lg font-bold text-slate-800">调停者 (INFP-A)</h3>
+                        <p class="text-slate-600 leading-relaxed">调停者是富有诗意、善良且无私的人，总是热衷于帮助正义事业。</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">能量</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-bold text-sky-600">97% 内向</span>
+                                <div class="tooltip">
+                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
+                                    <span class="tooltip-text">内向型的人往往更喜欢较少但深入和有意义的社交互动，通常更喜欢安静的环境。</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
+                            <div class="bg-sky-500 h-2.5 rounded-full" style="width: 97%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>外向</span>
+                            <span class="font-bold">内向</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">心智</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-bold text-green-600">56% 天马行空</span>
+                                <div class="tooltip">
+                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
+                                    <span class="tooltip-text">天马行空型的人非常富有想象力、胸怀海纳百川，对世界始终求知若渴。他们将独创性视若珍宝，热衷于探寻那
+                                        些隐藏在表象之下的深层含义，以及看似遥远却充满希望的可能性。
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
+                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 56%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span class="font-bold">天马行空</span>
+                            <span>求真务实</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">天性</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-bold text-pink-600">87% 情感细腻</span>
+                                <div class="tooltip">
+                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
+                                    <span class="tooltip-text">情感细腻型的人对情感的表达与内心的敏感度珍视有加，他们乐于袒露自己的情感，细腻感知周遭的一切。他们
+                                        将同理心、社会的和谐融洽以及人们之间的和衷共济奉为至宝，认为这些是人际交往和社会生活中不可或缺的重
+                                        要元素。</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
+                            <div class="bg-pink-500 h-2.5 rounded-full" style="width: 87%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>理性思考</span>
+                            <span class="font-bold">情感细腻</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">应对方式</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-bold text-purple-600">57% 随机应变</span>
+                                <div class="tooltip">
+                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
+                                    <span class="tooltip-text">随机应变型的人极善见机行事，能够敏锐地捕捉并适应各类机会。他们大多个性灵活，特立独行，相较于安稳的
+                                        状态，他们对新奇独特的事物更为青睐，甚至达到标新立异的程度。</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
+                            <div class="bg-purple-500 h-2.5 rounded-full" style="width: 57%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span class="font-bold">随机应变</span>
+                            <span>运筹帷幄</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">身份特征</span>
+                            <div class="flex items-center gap-1">
+                                <span class="font-bold text-indigo-600">56% 自信果断</span>
+                                <div class="tooltip">
+                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
+                                    <span class="tooltip-text">自信果断型的人向来胸有成竹，处事时心平气和，面对压力坚如磐石。他们面对困难泰然处之，从不杞人忧天，
+                                        在奋力追求目标的道路上，始终怀揣着坚定的自信。</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
+                            <div class="bg-indigo-500 h-2.5 rounded-full" style="width: 56%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span class="font-bold">自信果断</span>
+                            <span>情绪易波动</span>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
@@ -214,11 +372,13 @@
         function copyQQ() {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText('1979287894').then(() => {
-                    showToast('QQ 号码已复制到剪贴板'); // 成功提示
+                    showToast('QQ 号码已复制到剪贴板');
                 }).catch(err => {
                     console.error('无法复制: ', err);
-                    showToast('复制失败！'); // 失败提示
+                    showToast('复制失败！');
                 });
+            } else {
+                showToast('浏览器不支持剪贴板功能');
             }
         }
 
@@ -261,6 +421,13 @@
                 toast.classList.remove('toast-exiting');
                 toast.classList.add('hidden');
             }
+        });
+
+        const infpToggle = document.getElementById('infp-toggle');
+        const infpDetails = document.getElementById('infp-details');
+
+        infpToggle.addEventListener('click', () => {
+            infpDetails.classList.toggle('hidden');
         });
     </script>
 </body>

@@ -110,7 +110,7 @@
             }
         }
 
-        .tooltip {
+        /* .tooltip {
             position: relative;
             display: inline-block;
             cursor: pointer;
@@ -122,26 +122,20 @@
             width: max-content;
             max-width: 240px;
             background-color: #1f2937;
-            /* bg-slate-800 */
             color: #fff;
             text-align: center;
             font-weight: 400;
-            /* font-light */
             font-size: 0.875rem;
-            /* text-sm */
             border-radius: 0.5rem;
-            /* rounded-lg */
             padding: 8px 12px;
             z-index: 10;
             bottom: 140%;
-            /* 向上定位 */
             left: 50%;
             transform: translateX(-50%) scale(0.9);
             opacity: 0;
             filter: blur(5px);
             transition: all 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            /* shadow-xl */
         }
 
         .tooltip:hover .tooltip-text {
@@ -149,7 +143,7 @@
             opacity: 1;
             filter: blur(0);
             transform: translateX(-50%) scale(1);
-        }
+        } */
     </style>
 </head>
 
@@ -189,15 +183,21 @@
                         class="font-semibold text-pink-500">喜欢和善良的人交朋友</span>。
                 </p>
                 <div class="flex flex-wrap gap-2 text-sm select-none">
-                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
-                    <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
-                    <span id="infp-toggle" class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
-                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Idealist</span>
-                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Aesthete</span>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
+                    <span onclick="copyText('LGBTQ+')"
+                        class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
+                    <span onclick="copyText('MTF')"
+                        class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
+                    <span onclick="copyText('INFP')"
+                        class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
+                    <span onclick="copyText('Idealist')"
+                        class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Idealist</span>
+                    <span onclick="copyText('Aesthete')"
+                        class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Aesthete</span>
+                    <span onclick="copyText('计算机科学')"
+                        class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
                 </div>
 
-                <div id="infp-details"
+                <!-- <div
                     class="hidden border-2 border-slate-200/80 p-5 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
 
                     <div class="sm:col-span-2 space-y-2">
@@ -311,7 +311,7 @@
                         </div>
                     </div>
 
-                </div>
+                </div> -->
             </section>
 
             <section class="mb-10">
@@ -387,6 +387,19 @@
             }
         }
 
+        function copyText(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('已复制到剪贴板！');
+                }).catch(err => {
+                    console.error('无法复制: ', err);
+                    showToast('复制失败！');
+                });
+            } else {
+                showToast('浏览器不支持剪贴板功能');
+            }
+        }
+
         const toast = document.getElementById('toast'); // 提示消息框
 
         // toast 定时器
@@ -426,13 +439,6 @@
                 toast.classList.remove('toast-exiting');
                 toast.classList.add('hidden');
             }
-        });
-
-        const infpToggle = document.getElementById('infp-toggle');
-        const infpDetails = document.getElementById('infp-details');
-
-        infpToggle.addEventListener('click', () => {
-            infpDetails.classList.toggle('hidden');
         });
     </script>
 </body>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>“😰不出来”表情包生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb; /* tailwind gray-200 */
+            border-radius: 9999px;
+            outline: none;
+            opacity: 0.7;
+            padding: 0;
+            transition: opacity .2s;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #4a90e2;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #4a90e2;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .hidden-svg {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-start min-h-screen p-4 sm:p-8">
+    <svg class="hidden-svg">
+        <filter id="gamma-filter">
+            <feComponentTransfer>
+                <feFuncR type="gamma" amplitude="1" exponent="1" />
+                <feFuncG type="gamma" amplitude="1" exponent="1" />
+                <feFuncB type="gamma" amplitude="1" exponent="1" />
+            </feComponentTransfer>
+        </filter>
+        <filter id="icon-blur-filter">
+            <feGaussianBlur stdDeviation="0.7"/>
+        </filter>
+    </svg>
+
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
+        <h1 class="text-2xl font-bold text-center text-blue-600">“😰不出来”表情包生成器</h1>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <label for="imageLoader" class="col-span-1 w-full flex items-center justify-center px-4 py-3 bg-gray-200 text-gray-700 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors">
+                <i class="fas fa-upload mr-2"></i>
+                <span>选择图片</span>
+            </label>
+            <input type="file" id="imageLoader" class="hidden" accept="image/*">
+            
+            <button id="downloadBtn" disabled class="col-span-1 w-full flex items-center justify-center px-4 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                <i class="fas fa-download mr-2"></i>
+                <span>下载图片</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4 pt-2">
+            <div class="control-group flex flex-col space-y-2">
+                <label for="brightness" class="text-sm font-medium text-gray-700 flex justify-between">亮度 <span id="brightnessValue" class="font-normal text-gray-500">100%</span></label>
+                <input type="range" class="slider" id="brightness" min="0" max="200" value="100">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="saturation" class="text-sm font-medium text-gray-700 flex justify-between">饱和度 <span id="saturationValue" class="font-normal text-gray-500">80%</span></label>
+                <input type="range" class="slider" id="saturation" min="0" max="200" value="80">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="blur" class="text-sm font-medium text-gray-700 flex justify-between">主图模糊 <span id="blurValue" class="font-normal text-gray-500">4px</span></label>
+                <input type="range" class="slider" id="blur" min="0" max="20" step="0.1" value="4">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="gamma" class="text-sm font-medium text-gray-700 flex justify-between">伽玛值 <span id="gammaValue" class="font-normal text-gray-500">1.1</span></label>
+                <input type="range" class="slider" id="gamma" min="0.1" max="3" step="0.1" value="1.1">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="glow" class="text-sm font-medium text-gray-700 flex justify-between">图标辉光 <span id="glowValue" class="font-normal text-gray-500">4px</span></label>
+                <input type="range" class="slider" id="glow" min="0" max="20" value="4">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="iconBlur" class="text-sm font-medium text-gray-700 flex justify-between">图标模糊 <span id="iconBlurValue" class="font-normal text-gray-500">0.7px</span></label>
+                <input type="range" class="slider" id="iconBlur" min="0" max="5" step="0.1" value="0.7">
+            </div>
+             <div class="control-group flex flex-col space-y-2">
+                <label for="iconSize" class="text-sm font-medium text-gray-700 flex justify-between">图标大小 <span id="iconSizeValue" class="font-normal text-gray-500">10%</span></label>
+                <input type="range" class="slider" id="iconSize" min="5" max="25" step="0.5" value="10">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="bottomBarHeight" class="text-sm font-medium text-gray-700 flex justify-between">底栏高度 <span id="bottomBarHeightValue" class="font-normal text-gray-500">100px</span></label>
+                <input type="range" class="slider" id="bottomBarHeight" min="50" max="150" value="100">
+            </div>
+             <div class="control-group flex flex-col space-y-2">
+                <label for="contentScale" class="text-sm font-medium text-gray-700 flex justify-between">图文大小 <span id="contentScaleValue" class="font-normal text-gray-500">1.1x</span></label>
+                <input type="range" class="slider" id="contentScale" min="0.5" max="2" step="0.05" value="1.1">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="relativeFontSize" class="text-sm font-medium text-gray-700 flex justify-between">相对字号 <span id="relativeFontSizeValue" class="font-normal text-gray-500">60%</span></label>
+                <input type="range" class="slider" id="relativeFontSize" min="30" max="100" value="60">
+            </div>
+            <div class="control-group flex flex-col space-y-2">
+                <label for="spacing" class="text-sm font-medium text-gray-700 flex justify-between">图文间距 <span id="spacingValue" class="font-normal text-gray-500">8px</span></label>
+                <input type="range" class="slider" id="spacing" min="0" max="50" value="8">
+            </div>
+        </div>
+        
+        <div class="preview bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg w-full aspect-[5/6] flex justify-center items-center overflow-hidden">
+            <canvas id="memeCanvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const UIElements = {
+            imageLoader: document.getElementById('imageLoader'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            canvas: document.getElementById('memeCanvas'),
+            gammaFilter: document.querySelector('#gamma-filter feComponentTransfer'),
+            iconBlurFilter: document.querySelector('#icon-blur-filter feGaussianBlur'),
+            // Sliders
+            brightness: document.getElementById('brightness'),
+            saturation: document.getElementById('saturation'),
+            blur: document.getElementById('blur'),
+            gamma: document.getElementById('gamma'),
+            glow: document.getElementById('glow'),
+            iconSize: document.getElementById('iconSize'),
+            iconBlur: document.getElementById('iconBlur'),
+            bottomBarHeight: document.getElementById('bottomBarHeight'),
+            contentScale: document.getElementById('contentScale'),
+            relativeFontSize: document.getElementById('relativeFontSize'),
+            spacing: document.getElementById('spacing'),
+            // Value Displays
+            brightnessValue: document.getElementById('brightnessValue'),
+            saturationValue: document.getElementById('saturationValue'),
+            blurValue: document.getElementById('blurValue'),
+            gammaValue: document.getElementById('gammaValue'),
+            glowValue: document.getElementById('glowValue'),
+            iconSizeValue: document.getElementById('iconSizeValue'),
+            iconBlurValue: document.getElementById('iconBlurValue'),
+            bottomBarHeightValue: document.getElementById('bottomBarHeightValue'),
+            contentScaleValue: document.getElementById('contentScaleValue'),
+            relativeFontSizeValue: document.getElementById('relativeFontSizeValue'),
+            spacingValue: document.getElementById('spacingValue'),
+        };
+
+        const ctx = UIElements.canvas.getContext('2d');
+        let originalImage = null;
+
+        const params = {
+            text: '不出来', // 固定文本
+            brightness: 100,
+            saturation: 80,
+            blur: 4,
+            gamma: 1.1,
+            glow: 4,
+            iconSize: 10,
+            iconBlur: 0.7,
+            bottomBarHeight: 100,
+            contentScale: 1.1,
+            relativeFontSize: 60,
+            spacing: 8,
+        };
+
+        const paramKeys = Object.keys(params).filter(k => k !== 'text');
+
+        function setupEventListeners() {
+            UIElements.imageLoader.addEventListener('change', handleImageUpload);
+            UIElements.downloadBtn.addEventListener('click', downloadMeme);
+            
+            paramKeys.forEach(key => {
+                const element = UIElements[key];
+                if (element) {
+                    element.addEventListener('input', (e) => updateParam(key, parseFloat(e.target.value)));
+                }
+            });
+        }
+        
+        function updateParam(key, value) {
+            params[key] = value;
+            const valueEl = UIElements[`${key}Value`];
+            if (valueEl) {
+                let unit = '';
+                if (['blur', 'glow', 'iconBlur', 'bottomBarHeight', 'spacing'].includes(key)) {
+                    unit = 'px';
+                } else if (['brightness', 'saturation', 'iconSize', 'relativeFontSize'].includes(key)) {
+                    unit = '%';
+                } else if (key === 'contentScale') {
+                    unit = 'x';
+                }
+                const displayValue = ['iconBlur', 'gamma', 'blur'].includes(key) ? value.toFixed(1) : value;
+                valueEl.textContent = `${displayValue}${unit}`;
+            }
+            if (originalImage) generateMeme();
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                originalImage = new Image();
+                originalImage.onload = () => {
+                    UIElements.downloadBtn.disabled = false;
+                    generateMeme();
+                };
+                originalImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function generateMeme() {
+            if (!originalImage) return;
+
+            const canvasWidth = 500;
+            const canvasHeight = 500 + params.bottomBarHeight;
+            UIElements.canvas.width = canvasWidth;
+            UIElements.canvas.height = canvasHeight;
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            // --- Main Image Drawing ---
+            UIElements.gammaFilter.querySelector('feFuncR').setAttribute('exponent', 1 / params.gamma);
+            UIElements.gammaFilter.querySelector('feFuncG').setAttribute('exponent', 1 / params.gamma);
+            UIElements.gammaFilter.querySelector('feFuncB').setAttribute('exponent', 1 / params.gamma);
+            ctx.filter = `url(#gamma-filter) brightness(${params.brightness}%) saturate(${params.saturation}%) blur(${params.blur}px)`;
+            
+            const cropSize = Math.min(originalImage.width, originalImage.height);
+            const sx = (originalImage.width - cropSize) / 2;
+            const sy = (originalImage.height - cropSize) / 2;
+            
+            const edgeFixScale = 1.0 + params.blur * 0.01;
+            const scaledDestSize = canvasWidth * edgeFixScale;
+            const destOffset = (scaledDestSize - canvasWidth) / 2;
+            ctx.drawImage(originalImage, sx, sy, cropSize, cropSize, -destOffset, -destOffset, scaledDestSize, scaledDestSize);
+
+            ctx.filter = 'none';
+
+            // --- Center Icon Drawing ---
+            ctx.save();
+            UIElements.iconBlurFilter.setAttribute('stdDeviation', params.iconBlur);
+            const radius = (canvasWidth * params.iconSize) / 100;
+            ctx.shadowColor = 'white';
+            ctx.shadowBlur = params.glow;
+            ctx.filter = 'url(#icon-blur-filter)';
+            
+            ctx.beginPath();
+            ctx.arc(250, 250, radius * 0.9, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = radius * 0.2;
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = `normal ${radius * 0.6}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('0%', 250, 250);
+            ctx.restore();
+
+            // --- Bottom Bar Drawing ---
+            const bottomBarY = 500;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, bottomBarY, canvasWidth, params.bottomBarHeight);
+
+            const baseMargin = canvasWidth * 0.02;
+            const baseContentHeight = params.bottomBarHeight - baseMargin * 2;
+            const finalThumbSize = baseContentHeight * params.contentScale;
+            const finalFontSize = finalThumbSize * (params.relativeFontSize / 100);
+
+            ctx.font = `normal ${finalFontSize}px "Heiti", "SimHei", "Microsoft YaHei", sans-serif`;
+            
+            const textWidth = ctx.measureText(params.text).width;
+            const totalContentWidth = finalThumbSize + params.spacing + textWidth;
+            let startX = (canvasWidth - totalContentWidth) / 2;
+            if (startX < baseMargin) startX = baseMargin;
+
+            ctx.drawImage(originalImage, sx, sy, cropSize, cropSize, startX, bottomBarY + (params.bottomBarHeight - finalThumbSize) / 2, finalThumbSize, finalThumbSize);
+            ctx.fillStyle = '#222';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(params.text, startX + finalThumbSize + params.spacing, bottomBarY + params.bottomBarHeight / 2);
+        }
+
+        function downloadMeme() {
+            if (!originalImage) return;
+            const link = document.createElement('a');
+            link.download = `meme-${params.text}-${Date.now()}.png`;
+            link.href = UIElements.canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // --- Initial Setup ---
+        // Initialize value displays on page load
+        paramKeys.forEach(key => {
+            const element = UIElements[key];
+            if (element) {
+                updateParam(key, parseFloat(element.value));
+            }
+        });
+        setupEventListeners();
+    </script>
+</body>
+</html>

@@ -110,7 +110,7 @@
             }
         }
 
-        /* .tooltip {
+        .tooltip {
             position: relative;
             display: inline-block;
             cursor: pointer;
@@ -143,7 +143,7 @@
             opacity: 1;
             filter: blur(0);
             transform: translateX(-50%) scale(1);
-        } */
+        }
     </style>
 </head>
 
@@ -157,31 +157,86 @@
                 <img src="./assets/avatar.jpg" alt="Yumeka的头像"
                     class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-white shadow-md">
 
-                <div class="">
+                <div>
                     <h1
                         class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 tracking-wider">
                         Yumeka の 小窝
                     </h1>
 
-                    <p class="text-slate-500 mt-2 text-sm">@KlxPiao</p>
+                    <p class="text-slate-500 mt-2 text-sm">
+                        <span class="tooltip" onclick="copyText('KlxPiao')">
+                            @KlxPiao
+                            <span class="tooltip-text">不重复的平台ID: KlxPiao</span>
+                        </span>
+                        <span class="tooltip" onclick="copyText('miniyu157')">
+                            / miniyu157
+                            <span class="tooltip-text">远古的ID: miniyu157</span>
+                        </span>
+                        <span class="tooltip" onclick="copyText('YMKxxxxxxxx')">
+                            / YMKxxxxxxxx
+                            <span class="tooltip-text">X(Twitter)的ID: YMKxxxxxxxx</span>
+                        </span>
+                    </p>
                 </div>
-
             </header>
 
             <section class="mb-10 space-y-4">
-                <h2 class="text-xl font-bold text-slate-800 border-b-2 border-purple-200 pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-address-card text-purple-500"></i>
-                    关于我
+                <h2
+                    class="text-xl font-bold text-slate-800 border-b-2 border-purple-200 pb-2 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-address-card text-purple-500"></i>
+                        关于我
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="tooltip">
+                            <div
+                                class="w-6 h-6 rounded-full bg-sky-500 flex items-center justify-center text-white text-xs font-bold">
+                                I
+                            </div>
+                            <span class="tooltip-text">97% 内向</span>
+                        </div>
+
+                        <div class="tooltip">
+                            <div
+                                class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                                N
+                            </div>
+                            <span class="tooltip-text">56% 天马行空</span>
+                        </div>
+
+                        <div class="tooltip">
+                            <div
+                                class="w-6 h-6 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs font-bold">
+                                F
+                            </div>
+                            <span class="tooltip-text">87% 情感细腻</span>
+                        </div>
+
+                        <div class="tooltip">
+                            <div
+                                class="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                                P
+                            </div>
+                            <span class="tooltip-text">57% 随机应变</span>
+                        </div>
+
+                        <div class="tooltip">
+                            <div
+                                class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                                A
+                            </div>
+                            <span class="tooltip-text">56% 自信果断</span>
+                        </div>
+                    </div>
+
                 </h2>
-<<<<<<< HEAD
-                <p class="text-base leading-relaxed">
-                    你好~ 这里是 Yumeka，一个普通的大学生，喜欢写代码、听音乐和玩游戏。很高兴能在这里与你相遇，我 <span
-=======
+
                 <p class="mb-4 text-base leading-relaxed">
-                    你好~ 这里是 Yumeka，一个普通的大学生，爱好有很多，写代码、听音乐、玩游戏… 很高兴能在这里与你相遇，我<span
->>>>>>> e218465 (修改主页自我介绍)
+                    你好～ 这里是 Yumeka，一个普通的大学生，爱好有很多，写代码、听音乐、玩游戏… 很高兴能在这里与你相遇，我<span
                         class="font-semibold text-pink-500">喜欢和善良的人交朋友</span>。
                 </p>
+
                 <div class="flex flex-wrap gap-2 text-sm select-none">
                     <span onclick="copyText('LGBTQ+')"
                         class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
@@ -196,122 +251,6 @@
                     <span onclick="copyText('计算机科学')"
                         class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
                 </div>
-
-                <!-- <div
-                    class="hidden border-2 border-slate-200/80 p-5 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
-
-                    <div class="sm:col-span-2 space-y-2">
-                        <h3 class="text-lg font-bold text-slate-800">调停者 (INFP-A)</h3>
-                        <p class="text-slate-600 leading-relaxed">调停者是富有诗意、善良且无私的人，总是热衷于帮助正义事业。</p>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">能量</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-bold text-sky-600">97% 内向</span>
-                                <div class="tooltip">
-                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
-                                    <span class="tooltip-text">内向型的人往往更喜欢较少但深入和有意义的社交互动，通常更喜欢安静的环境。</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
-                            <div class="bg-sky-500 h-2.5 rounded-full" style="width: 97%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span>外向</span>
-                            <span class="font-bold">内向</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">心智</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-bold text-green-600">56% 天马行空</span>
-                                <div class="tooltip">
-                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
-                                    <span class="tooltip-text">天马行空型的人非常富有想象力、胸怀海纳百川，对世界始终求知若渴。他们将独创性视若珍宝，热衷于探寻那
-                                        些隐藏在表象之下的深层含义，以及看似遥远却充满希望的可能性。
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
-                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 56%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span class="font-bold">天马行空</span>
-                            <span>求真务实</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">天性</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-bold text-pink-600">87% 情感细腻</span>
-                                <div class="tooltip">
-                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
-                                    <span class="tooltip-text">情感细腻型的人对情感的表达与内心的敏感度珍视有加，他们乐于袒露自己的情感，细腻感知周遭的一切。他们
-                                        将同理心、社会的和谐融洽以及人们之间的和衷共济奉为至宝，认为这些是人际交往和社会生活中不可或缺的重
-                                        要元素。</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
-                            <div class="bg-pink-500 h-2.5 rounded-full" style="width: 87%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span>理性思考</span>
-                            <span class="font-bold">情感细腻</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">应对方式</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-bold text-purple-600">57% 随机应变</span>
-                                <div class="tooltip">
-                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
-                                    <span class="tooltip-text">随机应变型的人极善见机行事，能够敏锐地捕捉并适应各类机会。他们大多个性灵活，特立独行，相较于安稳的
-                                        状态，他们对新奇独特的事物更为青睐，甚至达到标新立异的程度。</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
-                            <div class="bg-purple-500 h-2.5 rounded-full" style="width: 57%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span class="font-bold">随机应变</span>
-                            <span>运筹帷幄</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">身份特征</span>
-                            <div class="flex items-center gap-1">
-                                <span class="font-bold text-indigo-600">56% 自信果断</span>
-                                <div class="tooltip">
-                                    <i class="fa-solid fa-circle-question text-slate-400"></i>
-                                    <span class="tooltip-text">自信果断型的人向来胸有成竹，处事时心平气和，面对压力坚如磐石。他们面对困难泰然处之，从不杞人忧天，
-                                        在奋力追求目标的道路上，始终怀揣着坚定的自信。</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 relative">
-                            <div class="bg-indigo-500 h-2.5 rounded-full" style="width: 56%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-500">
-                            <span class="font-bold">自信果断</span>
-                            <span>情绪易波动</span>
-                        </div>
-                    </div>
-
-                </div> -->
             </section>
 
             <section class="mb-10">
@@ -327,11 +266,17 @@
                         <p class="text-sm text-slate-600">一个为爱制作的小工具</p>
                     </a>
 
-                    <a href="https://github.com/miniyu157/YumekaBlog" target="_blank"
-                        class="hover-lift block bg-slate-100 p-5 rounded-lg shadow-sm opacity-50">
-                        <h3 class="font-bold text-slate-800 mb-1">个人博客 (施工中)</h3>
-                        <p class="text-sm text-slate-600">单击查看仓库</p>
+                    <a href="./meme/" target="_blank"
+                        class="hover-lift block bg-gradient-to-r from-indigo-100 to-purple-100 p-5 rounded-lg shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-1">“😰不出来”表情包生成器</h3>
+                        <p class="text-sm text-slate-600">来自一个表情包的灵感</p>
                     </a>
+
+                    <a class="hover-lift block bg-slate-100 p-5 rounded-lg shadow-sm opacity-50">
+                        <h3 class="font-bold text-slate-800 mb-1">个人博客 (施工中)</h3>
+                        <s class="text-sm text-slate-600">它可能刚刚新建文件夹</s>
+                    </a>
+
                 </div>
             </section>
 
@@ -346,7 +291,7 @@
                         class="text-slate-500 hover:text-slate-900 transition-colors" aria-label="GitHub">
                         <i class="fa-brands fa-github"></i>
                     </a>
-                    <a href="https://x.com/KlxPiao" target="_blank"
+                    <a href="https://x.com/YMKxxxxxxxx" target="_blank"
                         class="text-slate-500 hover:text-black transition-colors" aria-label="X/Twitter">
                         <i class="fa-brands fa-x-twitter"></i>
                     </a>

@@ -35,6 +35,14 @@
             --size-y: calc(var(--full-width) / cos(var(--angle)));
         }
 
+        .title {
+            color: white;
+            text-shadow: -1px 1px pink, 0px 1px pink, 1px 1px pink,
+                -1px 0px pink, 3px 3px 1px pink, 1px 0px pink,
+                -1px -1px pink, 0px -1px pink, 1px 1px pink,
+                3px 3px 5px pink;
+        }
+
         body {
             font-family: 'Noto Sans SC', sans-serif;
             background-color: var(--bg-color);
@@ -158,8 +166,7 @@
                     class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-white shadow-md">
 
                 <div>
-                    <h1
-                        class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 tracking-wider">
+                    <h1 class="title text-4xl font-bold tracking-wider">
                         Yumeka の 小窝
                     </h1>
 
@@ -233,23 +240,32 @@
                 </h2>
 
                 <p class="mb-4 text-base leading-relaxed">
-                    你好～ 这里是 Yumeka，一个普通的大学生，爱好有很多，写代码、听音乐、玩游戏… 很高兴能在这里与你相遇，我<span
-                        class="font-semibold text-pink-500">喜欢和善良的人交朋友</span>。
+                    你好～ 这里是 Yumeka，也可以叫我<span class="font-semibold text-purple-500">夢花/梦花/梦花酱</span>，
+                    是一个普通的大学生，爱好有很多，例如写代码、听音乐、玩游戏… 很高兴能在这里与你相遇，我<span
+                        class="font-semibold text-pink-500">喜欢和善良的人交朋友。</span>
                 </p>
 
                 <div class="flex flex-wrap gap-2 text-sm select-none">
+                    <span onclick="copyText('MtF')"
+                        class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MtF</span>
                     <span onclick="copyText('LGBTQ+')"
                         class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium">LGBTQ+</span>
-                    <span onclick="copyText('MTF')"
-                        class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-medium">MTF</span>
-                    <span onclick="copyText('INFP')"
-                        class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP</span>
-                    <span onclick="copyText('Idealist')"
-                        class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Idealist</span>
-                    <span onclick="copyText('Aesthete')"
-                        class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Aesthete</span>
-                    <span onclick="copyText('计算机科学')"
-                        class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">计算机科学</span>
+                    <span onclick="copyText('INFP-A')"
+                        class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">INFP-A</span>
+                    <span onclick="copyText('理想主义')"
+                        class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">理想主义</span>
+                    <span onclick="copyText('唯美主义')"
+                        class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">唯美主义</span>
+                    <span onclick="copyText('存在主义')"
+                        class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">存在主义</span>
+                    <span onclick="copyText('ArchLinux')"
+                        class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full font-medium">ArchLinux</span>
+                    <span onclick="copyText('i7-9750HF')"
+                        class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">i7-9750HF</span>
+                    <span onclick="copyText('GTX 1650')"
+                        class="bg-lime-100 text-lime-800 px-3 py-1 rounded-full font-medium">GTX 1650</span>
+                    <span onclick="copyText('🎂 12-08')"
+                        class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-medium">🎂 12-08</span>
                 </div>
             </section>
 
